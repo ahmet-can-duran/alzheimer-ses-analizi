@@ -45,7 +45,7 @@ def analiz_yap(ses_verisi):
     st.divider()
     if tahmin[0] == 0:
         st.success("Analizimi tamamladım. Girdiğiniz ses verisi tamamen sağlıklı bir profile uyuyor.")
-        
+        st.balloons()
     elif tahmin[0] == 1:
         st.error("Analizimi tamamladım. Modelim bu ses profilinde maalesef Alzheimer risk faktörleri tespit etti.")
 
