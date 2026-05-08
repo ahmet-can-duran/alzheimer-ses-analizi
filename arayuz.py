@@ -22,8 +22,6 @@ def ozellik_cikar(dosya):
         y = resample(y, int(len(y) * 44100 / sr))
         sr = 44100
         
-    y = np.int16(y / np.max(np.abs(y)) * 32767)
-        
     y_temiz = nr.reduce_noise(y=y, sr=sr)
         
     mfccs_veri = mfcc(y_temiz, sr, numcep=13)
@@ -33,6 +31,9 @@ def ozellik_cikar(dosya):
 def analiz_yap(ses_verisi):
     with open("temp.wav", "wb") as f:
         f.write(ses_verisi.getbuffer())
+        
+    st.write("Yapay Zekanın Analiz Ettiği Ses:")
+    st.audio("temp.wav", format="audio/wav")
         
     mfcc_degerleri = ozellik_cikar("temp.wav")
     test_verisi = mfcc_degerleri.reshape(1, -1)
