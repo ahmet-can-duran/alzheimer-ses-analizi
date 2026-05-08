@@ -1,5 +1,6 @@
 import streamlit as st
 from scipy.io import wavfile
+from scipy.signal import resample
 from python_speech_features import mfcc
 import numpy as np
 import joblib
@@ -13,8 +14,15 @@ model = model_yukle()
 
 def ozellik_cikar(dosya):
     sr, y = wavfile.read(dosya)
+    
     if len(y.shape) > 1:
         y = y[:, 0]
+        
+    if sr != 44100:
+        y = resample(y, int(len(y) * 44100 / sr))
+        sr = 44100
+        
+    y = np.int16(y / np.max(np.abs(y)) * 32767)
         
     y_temiz = nr.reduce_noise(y=y, sr=sr)
         
