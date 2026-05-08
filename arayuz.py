@@ -4,7 +4,6 @@ from scipy.signal import resample
 from python_speech_features import mfcc
 import numpy as np
 import joblib
-import noisereduce as nr
 
 @st.cache_resource
 def model_yukle():
@@ -22,9 +21,13 @@ def ozellik_cikar(dosya):
         y = resample(y, int(len(y) * 44100 / sr))
         sr = 44100
         
-    y_temiz = nr.reduce_noise(y=y, sr=sr)
-        
-    mfccs_veri = mfcc(y_temiz, sr, numcep=13)
+    if y.dtype != np.int16:
+        if np.max(np.abs(y)) <= 1.5: 
+            y = np.int16(y * 32767)
+        else:
+            y = np.int16(y)
+            
+    mfccs_veri = mfcc(y, sr, numcep=13)
     mfcc_ortalama = np.mean(mfccs_veri, axis=0)
     return mfcc_ortalama
 
@@ -32,7 +35,7 @@ def analiz_yap(ses_verisi):
     with open("temp.wav", "wb") as f:
         f.write(ses_verisi.getbuffer())
         
-    st.write("Yapay Zekanın Analiz Ettiği Ses:")
+    st.write("Yapay zekamın analiz ettiği ses:")
     st.audio("temp.wav", format="audio/wav")
         
     mfcc_degerleri = ozellik_cikar("temp.wav")
@@ -42,7 +45,6 @@ def analiz_yap(ses_verisi):
     st.divider()
     if tahmin[0] == 0:
         st.success("Analizimi tamamladım. Girdiğiniz ses verisi tamamen sağlıklı bir profile uyuyor.")
-        st.balloons()
     elif tahmin[0] == 1:
         st.error("Analizimi tamamladım. Modelim bu ses profilinde maalesef Alzheimer risk faktörleri tespit etti.")
 
@@ -55,7 +57,7 @@ with sekme1:
     yuklenen_dosya = st.file_uploader("Test edilecek .wav dosyasını yükleyebilirsiniz", type=["wav"])
     if yuklenen_dosya is not None:
         st.audio(yuklenen_dosya, format='audio/wav')
-        if st.button("Sisteme Yükle ve Analizi Başlat"):
+        if st.button("Sisteme Yükle ve Analizimi Başlat"):
             analiz_yap(yuklenen_dosya)
 
 with sekme2:
