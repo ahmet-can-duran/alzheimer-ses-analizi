@@ -1,0 +1,6 @@
+streamlit
+scipy
+python_speech_features
+numpy
+joblib
+scikit-learn
